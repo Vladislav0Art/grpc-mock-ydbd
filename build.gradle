@@ -21,8 +21,8 @@ java {
 
 // Feel free to delete the comment at the next line. It is just for safely
 // updating the version in our release process.
-def grpcVersion = '1.71.0' // CURRENT_GRPC_VERSION
-def protobufVersion = '3.25.5'
+def grpcVersion = '1.71.0' // '1.71.0' // CURRENT_GRPC_VERSION
+def protobufVersion = '3.25.6' // '3.25.5'
 def protocVersion = protobufVersion
 
 dependencies {
@@ -32,7 +32,7 @@ dependencies {
     compileOnly "org.apache.tomcat:annotations-api:6.0.53"
 
     // examples/advanced need this for JsonFormat
-    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+//    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
 
     runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
 
@@ -58,8 +58,9 @@ sourceSets {
         proto {
             // In addition to the default 'src/main/proto'
             // srcDir '/root/projects/ydbwork/ydb' // '/root/projects/ydbwork/ydb/ydb'
-            srcDir '/root/projects/ydbwork/ydb'
+            srcDir '/home/ubuntu/research-work-2025/ydbwork/ydb'
             include 'ydb/public/api/**/*.proto'
+//            include 'ydb/public/api/protos/ydb_table.proto'
             exclude 'ydb/public/lib/**'
             exclude 'ydb/public/sdk/**'
             exclude 'ydb/public/tools/**'
@@ -71,6 +72,8 @@ sourceSets {
             exclude 'ydb/mvp/**'
             exclude 'contrib/**'
             exclude 'library/**'
+            exclude 'vendor/**'
+            exclude 'util/**'
             exclude 'yql/**'
             exclude 'yt/**'
             // exclude '**/*'
