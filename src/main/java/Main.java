@@ -11,6 +11,7 @@ import com.yandex.ydb.table.v1.YdbTableV1;
 import com.yandex.ydb.OperationProtos.Operation;
 import com.google.protobuf.Any;
 import com.yandex.ydb.table.YdbTable;
+import com.yandex.ydb.ValueProtos;
 
 import java.util.Objects;
 
@@ -61,9 +62,41 @@ class MockTableService extends TableServiceGrpc.TableServiceImplBase {
     // com.yandex.ydb.table.YdbTable.BulkUpsertRequest request
 
     @Override
-    public void createSession(
-        YdbTable.CreateSessionRequest request,
-        io.grpc.stub.StreamObserver<YdbTable.CreateSessionResponse> responseObserver) {
+    public void describeTable(YdbTable.DescribeTableRequest request, StreamObserver<YdbTable.DescribeTableResponse> responseObserver) {
+        System.out.println("Received describeTable request: " + request.toString());
+
+        YdbTable.ColumnMeta column1 = YdbTable.ColumnMeta.newBuilder()
+                .setName("column1")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.STRING))
+                .setNotNull(true)
+                .build();
+        YdbTable.ColumnMeta column2 = YdbTable.ColumnMeta.newBuilder()
+                .setName("column2")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.INT64))
+                .setNotNull(true)
+                .build();
+
+        YdbTable.DescribeTableResult result = YdbTable.DescribeTableResult.newBuilder()
+                .addColumns(column1)
+                .addColumns(column2)
+                .build();
+
+        Operation operation = Operation.newBuilder()
+                .setReady(true)
+                .setStatus(StatusCodesProtos.StatusIds.StatusCode.SUCCESS)
+                .setResult(Any.pack(result))
+                .build();
+
+        YdbTable.DescribeTableResponse response = YdbTable.DescribeTableResponse.newBuilder()
+                .setOperation(operation)
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void createSession(YdbTable.CreateSessionRequest request, StreamObserver<YdbTable.CreateSessionResponse> responseObserver) {
         System.out.println("Received createSession request: " + request.toString());
 
         YdbTable.CreateSessionResult result = YdbTable.CreateSessionResult.newBuilder()
