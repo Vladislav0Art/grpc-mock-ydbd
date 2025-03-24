@@ -10,6 +10,7 @@ import com.yandex.ydb.discovery.DiscoveryProtos.ListEndpointsResponse;
 import com.yandex.ydb.table.v1.YdbTableV1;
 import com.yandex.ydb.OperationProtos.Operation;
 import com.google.protobuf.Any;
+import com.yandex.ydb.table.YdbTable;
 
 import java.util.Objects;
 
@@ -39,7 +40,6 @@ class MockDiscoveryService extends DiscoveryServiceGrpc.DiscoveryServiceImplBase
                 .addEndpoints(endpoint)
                 .build();
 
-        // Create a mock response object for ListEndpointsResponse
         Operation operation = Operation.newBuilder()
                 .setReady(true)
                 .setStatus(StatusCodesProtos.StatusIds.StatusCode.SUCCESS)
@@ -59,21 +59,41 @@ class MockDiscoveryService extends DiscoveryServiceGrpc.DiscoveryServiceImplBase
 
 class MockTableService extends TableServiceGrpc.TableServiceImplBase {
     // com.yandex.ydb.table.YdbTable.BulkUpsertRequest request
+
+    @Override
+    public void createSession(
+        YdbTable.CreateSessionRequest request,
+        io.grpc.stub.StreamObserver<YdbTable.CreateSessionResponse> responseObserver) {
+        System.out.println("Received createSession request: " + request.toString());
+
+        YdbTable.CreateSessionResult result = YdbTable.CreateSessionResult.newBuilder()
+                .setSessionId("test_session_id")
+                .build();
+
+        Operation operation = Operation.newBuilder()
+                .setReady(true)
+                .setStatus(StatusCodesProtos.StatusIds.StatusCode.SUCCESS)
+                .setResult(Any.pack(result))
+                .build();
+
+        YdbTable.CreateSessionResponse response = YdbTable.CreateSessionResponse.newBuilder()
+                .setOperation(operation)
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
     @Override
     public void bulkUpsert(
-            com.yandex.ydb.table.YdbTable.BulkUpsertRequest request,
-            io.grpc.stub.StreamObserver<com.yandex.ydb.table.YdbTable.BulkUpsertResponse> responseObserver
+        YdbTable.BulkUpsertRequest request,
+        io.grpc.stub.StreamObserver<YdbTable.BulkUpsertResponse> responseObserver
     ) {
         System.out.println("Received bulkUpsert request: " + request.toString());
-        // Create a mock response object for BulkUpsertResponse
-        com.yandex.ydb.table.YdbTable.BulkUpsertResponse response =
-                com.yandex.ydb.table.YdbTable.BulkUpsertResponse.newBuilder()
-                        .build(); // Build an empty response
 
-        // Send the response back to the client
+        YdbTable.BulkUpsertResponse response = YdbTable.BulkUpsertResponse.newBuilder().build();
+
         responseObserver.onNext(response);
-
-        // Signal that the response is complete
         responseObserver.onCompleted();
     }
 
