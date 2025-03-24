@@ -22,7 +22,7 @@ import java.util.Objects;
 class MockOperationService extends OperationServiceGrpc.OperationServiceImplBase {
     @Override
     public void getOperation(OperationProtos.GetOperationRequest request, StreamObserver<OperationProtos.GetOperationResponse> responseObserver) {
-        System.out.println("Received getOperation request: " + request.toString());
+        // System.out.println("Received getOperation request: " + request.toString());
 
         Operation operation = Operation.newBuilder()
             .setReady(true)
@@ -54,7 +54,7 @@ class MockDiscoveryService extends DiscoveryServiceGrpc.DiscoveryServiceImplBase
     @Override
     public void listEndpoints(ListEndpointsRequest request, StreamObserver<ListEndpointsResponse> responseObserver
     ) {
-        System.out.println("Received listEndpoints request: " + request.toString());
+        // System.out.println("Received listEndpoints request: " + request.toString());
 
         DiscoveryProtos.EndpointInfo endpoint = DiscoveryProtos.EndpointInfo.newBuilder()
                 .setAddress(address)
@@ -87,7 +87,7 @@ class MockTableService extends TableServiceGrpc.TableServiceImplBase {
 
     @Override
     public void describeTable(YdbTable.DescribeTableRequest request, StreamObserver<YdbTable.DescribeTableResponse> responseObserver) {
-        System.out.println("Received describeTable request: " + request.toString());
+        // System.out.println("Received describeTable request: " + request.toString());
 
         YdbTable.ColumnMeta column1 = YdbTable.ColumnMeta.newBuilder()
                 .setName("column1")
@@ -121,7 +121,7 @@ class MockTableService extends TableServiceGrpc.TableServiceImplBase {
 
     @Override
     public void createSession(YdbTable.CreateSessionRequest request, StreamObserver<YdbTable.CreateSessionResponse> responseObserver) {
-        System.out.println("Received createSession request: " + request.toString());
+        // System.out.println("Received createSession request: " + request.toString());
 
         YdbTable.CreateSessionResult result = YdbTable.CreateSessionResult.newBuilder()
                 .setSessionId("test_session_id")
@@ -146,7 +146,7 @@ class MockTableService extends TableServiceGrpc.TableServiceImplBase {
         YdbTable.BulkUpsertRequest request,
         io.grpc.stub.StreamObserver<YdbTable.BulkUpsertResponse> responseObserver
     ) {
-        System.out.println("Received bulkUpsert request: " + request.toString());
+        // System.out.println("Received bulkUpsert request: " + request.toString());
 
         YdbTable.BulkUpsertResponse response = YdbTable.BulkUpsertResponse.newBuilder().build();
 
@@ -171,7 +171,7 @@ public class Main {
 
         // Start the server
         server.start();
-        System.out.println("Server started, listening on " + port);
+         System.out.println("Server started, listening on " + port);
 
         // Keep the server running
         server.awaitTermination();
