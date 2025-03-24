@@ -1,9 +1,60 @@
+import com.yandex.ydb.StatusCodesProtos;
+import com.yandex.ydb.discovery.DiscoveryProtos;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import com.yandex.ydb.table.v1.TableServiceGrpc;
+import com.yandex.ydb.discovery.v1.DiscoveryServiceGrpc;
+import com.yandex.ydb.discovery.DiscoveryProtos.ListEndpointsRequest;
+import com.yandex.ydb.discovery.DiscoveryProtos.ListEndpointsResponse;
 import com.yandex.ydb.table.v1.YdbTableV1;
+import com.yandex.ydb.OperationProtos.Operation;
+import com.google.protobuf.Any;
 
+import java.util.Objects;
+
+
+class MockDiscoveryService extends DiscoveryServiceGrpc.DiscoveryServiceImplBase {
+    // com.yandex.ydb.discovery.v1.ListEndpointsRequest request
+    private final String address;
+    private final int port;
+
+    MockDiscoveryService(String address, int port) {
+        Objects.requireNonNull(address);
+        this.address = address;
+        this.port = port;
+    }
+
+    @Override
+    public void listEndpoints(ListEndpointsRequest request, StreamObserver<ListEndpointsResponse> responseObserver
+    ) {
+        System.out.println("Received listEndpoints request: " + request.toString());
+
+        DiscoveryProtos.EndpointInfo endpoint = DiscoveryProtos.EndpointInfo.newBuilder()
+                .setAddress(address)
+                .setPort(port)
+                .build();
+
+        DiscoveryProtos.ListEndpointsResult result = DiscoveryProtos.ListEndpointsResult.newBuilder()
+                .addEndpoints(endpoint)
+                .build();
+
+        // Create a mock response object for ListEndpointsResponse
+        Operation operation = Operation.newBuilder()
+                .setReady(true)
+                .setStatus(StatusCodesProtos.StatusIds.StatusCode.SUCCESS)
+                .setResult(Any.pack(result))
+                .build();
+
+        ListEndpointsResponse response = ListEndpointsResponse.newBuilder()
+                .setOperation(operation)
+                // .addEndpoints(YdbTableV1.YdbTableService.newBuilder().setPath("/rpc/v1/table/sessionService").build())
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+}
 
 
 class MockTableService extends TableServiceGrpc.TableServiceImplBase {
@@ -33,8 +84,11 @@ public class Main {
     public static void main(String[] args) throws Exception {
         // Create the gRPC server on a specific port
         int port = 50051;
+        String address = "localhost";
+
         Server server = ServerBuilder.forPort(port)
-                .addService(new MockTableService()) // Add your service implementation here
+                .addService(new MockTableService())
+                .addService(new MockDiscoveryService(address, port))
                 .build();
 
         // Start the server
