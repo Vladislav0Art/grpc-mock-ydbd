@@ -89,6 +89,66 @@ class MockTableService extends TableServiceGrpc.TableServiceImplBase {
     public void describeTable(YdbTable.DescribeTableRequest request, StreamObserver<YdbTable.DescribeTableResponse> responseObserver) {
         // System.out.println("Received describeTable request: " + request.toString());
 
+        // column descriptions
+        // TODO: TZ_DATETIME not supported? (See: https://ydb.tech/docs/en/yql/reference/types/primitive#datetime)
+        YdbTable.ColumnMeta eventTimeColumn = YdbTable.ColumnMeta.newBuilder()
+                .setName("event_time")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.TZ_DATETIME))
+                .setNotNull(true)
+                .build();
+
+        // TODO: use VariantType?
+        YdbTable.ColumnMeta eventTypeColumn = YdbTable.ColumnMeta.newBuilder()
+                .setName("event_type")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.STRING))
+                .setNotNull(true)
+                .build();
+
+        // TODO: use int64?
+        YdbTable.ColumnMeta productIdColumn = YdbTable.ColumnMeta.newBuilder()
+                .setName("product_id")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.STRING))
+                .setNotNull(true)
+                .build();
+
+        YdbTable.ColumnMeta categoryIdColumn = YdbTable.ColumnMeta.newBuilder()
+                .setName("category_id")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.STRING))
+                .setNotNull(true)
+                .build();
+
+        YdbTable.ColumnMeta categoryCodeColumn = YdbTable.ColumnMeta.newBuilder()
+                .setName("category_code")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.STRING))
+                .setNotNull(false)
+                .build();
+
+        YdbTable.ColumnMeta brandColumn = YdbTable.ColumnMeta.newBuilder()
+                .setName("brand")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.STRING))
+                .setNotNull(false)
+                .build();
+
+        // TODO: use float?
+        YdbTable.ColumnMeta priceColumn = YdbTable.ColumnMeta.newBuilder()
+                .setName("price")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.DOUBLE))
+                .setNotNull(true)
+                .build();
+
+        YdbTable.ColumnMeta userIdColumn = YdbTable.ColumnMeta.newBuilder()
+                .setName("user_id")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.STRING))
+                .setNotNull(true)
+                .build();
+
+        YdbTable.ColumnMeta userSessionColumn = YdbTable.ColumnMeta.newBuilder()
+                .setName("user_session")
+                .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.STRING))
+                .setNotNull(true)
+                .build();
+
+        /*
         YdbTable.ColumnMeta column1 = YdbTable.ColumnMeta.newBuilder()
                 .setName("column1")
                 .setType(ValueProtos.Type.newBuilder().setTypeId(ValueProtos.Type.PrimitiveTypeId.STRING))
@@ -103,6 +163,19 @@ class MockTableService extends TableServiceGrpc.TableServiceImplBase {
         YdbTable.DescribeTableResult result = YdbTable.DescribeTableResult.newBuilder()
                 .addColumns(column1)
                 .addColumns(column2)
+                .build();
+        */
+
+        YdbTable.DescribeTableResult result = YdbTable.DescribeTableResult.newBuilder()
+                .addColumns(eventTimeColumn)
+                .addColumns(eventTypeColumn)
+                .addColumns(productIdColumn)
+                .addColumns(categoryIdColumn)
+                .addColumns(categoryCodeColumn)
+                .addColumns(brandColumn)
+                .addColumns(priceColumn)
+                .addColumns(userIdColumn)
+                .addColumns(userSessionColumn)
                 .build();
 
         Operation operation = Operation.newBuilder()
