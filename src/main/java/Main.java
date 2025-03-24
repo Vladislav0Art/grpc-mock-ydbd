@@ -1,3 +1,4 @@
+import com.yandex.ydb.OperationProtos;
 import com.yandex.ydb.StatusCodesProtos;
 import com.yandex.ydb.discovery.DiscoveryProtos;
 import io.grpc.Server;
@@ -12,8 +13,31 @@ import com.yandex.ydb.OperationProtos.Operation;
 import com.google.protobuf.Any;
 import com.yandex.ydb.table.YdbTable;
 import com.yandex.ydb.ValueProtos;
+import com.yandex.ydb.operation.v1.OperationServiceGrpc;
 
 import java.util.Objects;
+
+
+
+class MockOperationService extends OperationServiceGrpc.OperationServiceImplBase {
+    @Override
+    public void getOperation(OperationProtos.GetOperationRequest request, StreamObserver<OperationProtos.GetOperationResponse> responseObserver) {
+        System.out.println("Received getOperation request: " + request.toString());
+
+        Operation operation = Operation.newBuilder()
+            .setReady(true)
+            .setStatus(StatusCodesProtos.StatusIds.StatusCode.SUCCESS)
+            // .setResult(Any.pack(result))
+            .build();
+
+        OperationProtos.GetOperationResponse response = OperationProtos.GetOperationResponse.newBuilder()
+            .setOperation(operation)
+            .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+}
 
 
 class MockDiscoveryService extends DiscoveryServiceGrpc.DiscoveryServiceImplBase {
@@ -142,6 +166,7 @@ public class Main {
         Server server = ServerBuilder.forPort(port)
                 .addService(new MockTableService())
                 .addService(new MockDiscoveryService(address, port))
+                .addService(new MockOperationService())
                 .build();
 
         // Start the server
