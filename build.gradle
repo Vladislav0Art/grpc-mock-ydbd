@@ -86,6 +86,10 @@ sourceSets {
     }
 }
 
+application {
+    mainClass = 'Main'
+}
+
 startScripts.enabled = false
 
 // Creates start scripts for a class name and adds it to the distribution. The
